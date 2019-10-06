@@ -1,0 +1,15 @@
+Package: Knapsack
+Type: Package
+Title: Solve knapsack problems
+Version: 1.0
+Date: 2019-09-20
+Author: c(person("Eric", "Kamphuis", email = "erika464@student.liu.se", role = c("aut", "cre")),
+          person("Julia, "Lindohf", email = "julso810@student.liu.se", role = c("aut", "cre")))
+Maintainer: Eric Kamphuis <erika464@student.liu.se>
+Description: The package can solve knapsack problems using various methods
+Depends: R (>= 3.5.0)
+License: GPL-3
+Encoding: UTF-8
+RoxygenNote: 6.1.1
+Suggests: knitr, rmarkdown, testthat
+VignetteBuilder: knitr
