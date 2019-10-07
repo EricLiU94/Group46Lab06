@@ -6,7 +6,7 @@ Date: 2019-09-20
 Author: c(person("Eric", "Kamphuis", email = "erika464@student.liu.se", role = c("aut", "cre")),
           person("Julia, "Lindohf", email = "julso810@student.liu.se", role = c("aut", "cre")))
 Maintainer: Eric Kamphuis <erika464@student.liu.se>
-Description: The package can solve knapsack problems using various methods
+Description: The package can solve knapsack problems using various methods.
 Depends: R (>= 3.5.0)
 License: GPL-3
 Encoding: UTF-8
