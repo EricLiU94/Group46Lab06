@@ -19,15 +19,17 @@ brute_force_knapsack <- function (x, W) {
   # Start time and memory measurement
   Rprof(assign("tmp", tempfile(), envir = .GlobalEnv), line.profiling = TRUE , memory.profiling = TRUE)
   # Check input parameters
-  stopifnot(is.data.frame(x), is.numeric(W), W > 0, colnames(x) == c("w", "v"), min(x$w) > 0, min(x$v) > 0, nrow(x) <= 32)
+  stopifnot(is.data.frame(x), is.numeric(W), W > 0, colnames(x) == c("w", "v"), min(x$w) < W, min(x$v) > 0, nrow(x) <= 32)
   # Initialize best value and number of objects
   best_value <- 0
   number_of_objects <- nrow(x)
+  
   # Run for 2^(n-1) configurations, which corresponds to all binary combinations
   for (i in 1:(2^number_of_objects - 1)) {
     # Calculate the current weight and value based on the binary combination
     current_weight <- sum(as.numeric(intToBits(i))[1:number_of_objects] * x$w)
     current_value <- sum(as.numeric(intToBits(i))[1:number_of_objects] * x$v)
+   
     # Check if the weight is allowed and the value improved the best value
     if (current_weight <= W & current_value > best_value) {
       # Set the combination as the best combination
@@ -35,6 +37,7 @@ brute_force_knapsack <- function (x, W) {
       best_combination <- which(as.vector(as.numeric(intToBits(i))) %in% 1)
     }
   }
+  
   # Stop time and memory measurement, get summary with: summaryRprof(tmp, lines = "show", memory = "both")
   Rprof()
   # Return the best combination
