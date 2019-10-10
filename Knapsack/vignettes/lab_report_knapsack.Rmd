@@ -19,12 +19,31 @@ Output:
 ```
 ## 1.1.3
 ### How much time does it takes to run the algorithm for n = 500 objects?
-After running: `brute_force_knapsack(x = knapsack_objects[1:500,], W = 3500)`
+After running: `knapsack_dynamic(x = knapsack_objects[1:500,], W = 3500)`
 
 Output:
 ```
 > summaryRprof(tmp, lines = "show", memory = "both")$sampling.time
 [1] 155.52
+```
+## 1.1.4
+### How much time does it takes to run the algorithm for n = 1000000 objects?
+After running: 
+```
+> set.seed(42)
+> n <- 1000000
+> knapsack_objects <-
++     data.frame(
++         w=sample(1:4000, size = n, replace = TRUE),
++         v=runif(n = n, 0, 10000)
++     )
+> greedy_knapsack(x = knapsack_objects, W = 3500)
+```
+
+Output:
+```
+> summaryRprof(tmp, lines = "show", memory = "both")$sampling.time
+[1] 1.56
 ```
 
 ```{r, include = FALSE}
