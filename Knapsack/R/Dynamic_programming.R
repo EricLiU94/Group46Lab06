@@ -1,3 +1,20 @@
+#' Dynamic programming knapsack
+#'
+#' @export knapsack_dynamic
+#' @importFrom utils Rprof
+#' @description A dynamic programming approach for solving knapsack problems.
+#' @param x A data.frame containing with variables \code{w} and \code{v}
+#' @param W A numeric value stating the maximum allowed weight of selected objects
+#' @return A list containg the best value and the elements selected
+#' @examples
+#' n <- 2000
+#' knapsack_objects <- data.frame(w=sample(1:4000, size = n, replace = TRUE), v=runif(n = n, 0, 10000))
+#' knapsack_dynamic(x = knapsack_objects[1:8,], W = 3500)
+#' knapsack_dynamic(x = knapsack_objects[1:12,], W = 3500)
+#' knapsack_dynamic(x = knapsack_objects[1:8,], W = 2000)
+#' knapsack_dynamic(x = knapsack_objects[1:12,], W = 2000)
+#' @references \url{https://en.wikipedia.org/wiki/Knapsack problem#0.2F1 knapsack problem}
+
 knapsack_dynamic <- function(x, W) {
   # Start time and memory measurement
   Rprof(assign("tmp", tempfile(), envir = .GlobalEnv), line.profiling = TRUE , memory.profiling = TRUE)

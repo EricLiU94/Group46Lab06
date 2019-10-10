@@ -19,6 +19,13 @@ Output:
 ```
 ## 1.1.3
 ### How much time does it takes to run the algorithm for n = 500 objects?
+After running: `brute_force_knapsack(x = knapsack_objects[1:500,], W = 3500)`
+
+Output:
+```
+> summaryRprof(tmp, lines = "show", memory = "both")$sampling.time
+[1] 155.52
+```
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
