@@ -21,8 +21,9 @@ knapsack_dynamic <- function(x, W) {
   # Check input parameters
   stopifnot(is.data.frame(x), is.numeric(W), W > 0, colnames(x) == c("w", "v"), min(x$w) > 0, min(x$v) > 0)
   
-  # Initialize number of objects
+  # Initialize number of objects and round column of weights
   number_of_objects <- nrow(x)
+  x$w <- round(x$w, 0)
   
   # Initialize the matrix with dynamic values
   m <- matrix(0, nrow = number_of_objects + 1, ncol = W + 1)
@@ -35,10 +36,9 @@ knapsack_dynamic <- function(x, W) {
       
       # Check if the current weight is larger than the current weight in the matrix
       if (x$w[i] > j) {
-        m[as.character(i), as.character(j)] <- m[as.character(i - 1), as.character(j)]
+        m[i + 1, j + 1] <- m[i, j + 1]
       } else {
-        m[as.character(i), as.character(j)] <- max(m[as.character(i - 1), as.character(j)], 
-                                                   m[as.character(i - 1), as.character(j - x$w[i])] + x$v[i])
+        m[i + 1, j + 1] <- max(m[i, j + 1], m[i, j + 1 - x$w[i]] + x$v[i])
       }
     }
   }
@@ -50,7 +50,7 @@ knapsack_dynamic <- function(x, W) {
   
   # While we are in the object and weight range find the next object to add
   while (current_object > 0 & current_weight > 0) {
-    while (m[as.character(current_object), as.character(current_weight)] == m[as.character(current_object - 1), as.character(current_weight)]) {
+    while (m[current_object + 1, current_weight + 1] == m[current_object, current_weight + 1]) {
       current_object <- current_object - 1
       
       # Check bounds
