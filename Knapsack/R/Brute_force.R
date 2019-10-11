@@ -17,9 +17,10 @@
 
 brute_force_knapsack <- function (x, W) {
   # Start time and memory measurement
-  Rprof(assign("tmp", tempfile(), envir = .GlobalEnv), line.profiling = TRUE , memory.profiling = TRUE)
+  # Rprof(assign("tmp", tempfile(), envir = .GlobalEnv), line.profiling = TRUE , memory.profiling = TRUE)
   # Check input parameters
   stopifnot(is.data.frame(x), is.numeric(W), W > 0, colnames(x) == c("w", "v"), min(x$w) < W, min(x$v) > 0, nrow(x) <= 32)
+  
   # Initialize best value and number of objects
   best_value <- 0
   number_of_objects <- nrow(x)
@@ -39,7 +40,7 @@ brute_force_knapsack <- function (x, W) {
   }
   
   # Stop time and memory measurement, get summary with: summaryRprof(tmp, lines = "show", memory = "both")
-  Rprof()
+  # Rprof()
   # Return the best combination
   return(list(value = round(best_value, 0), elements = best_combination))
 }
