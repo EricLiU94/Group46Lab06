@@ -15,7 +15,7 @@ After running: `brute_force_knapsack(x = knapsack_objects[1:16,], W = 3500)`
 Output:
 ```
 > summaryRprof(tmp, lines = "show", memory = "both")$sampling.time
-[1] 0.58
+[1] 0.52
 ```
 ## 1.1.3
 ### How much time does it takes to run the algorithm for n = 500 objects?
@@ -24,12 +24,13 @@ After running: `knapsack_dynamic(x = knapsack_objects[1:500,], W = 3500)`
 Output:
 ```
 > summaryRprof(tmp, lines = "show", memory = "both")$sampling.time
-[1] 155.52
+[1] 8.36
 ```
 ## 1.1.4
 ### How much time does it takes to run the algorithm for n = 1000000 objects?
 After running: 
 ```
+> suppressWarnings(RNGversion("3.5.9"))
 > set.seed(42)
 > n <- 1000000
 > knapsack_objects <-
@@ -43,8 +44,162 @@ After running:
 Output:
 ```
 > summaryRprof(tmp, lines = "show", memory = "both")$sampling.time
-[1] 1.56
+[1] 0.32
 ```
+## 1.1.6
+### What performance gain could you get by trying to improving your code?
+A baseline has been set in the previous sections. We attempted to improve the performance of all three algorithms.
+We also used the general profiling tool in R studio where we saw similar results.
+
+#### brute_force_knapsack
+After running: `brute_force_knapsack(x = knapsack_objects[1:24,], W = 3500)`
+
+Output:
+```
+> summaryRprof(tmp, lines = "show", memory = "both")$by.line
+                 self.time self.pct total.time total.pct mem.total
+Brute_force.R#29      1.06     0.91       1.06      0.91     544.1
+Brute_force.R#31     53.96    46.10      53.96     46.10   22504.4
+Brute_force.R#32     56.88    48.60      56.88     48.60   24524.7
+Brute_force.R#35      5.14     4.39       5.14      4.39    1933.5
+
+> summaryRprof(tmp, lines = "show", memory = "both")$sampling.time
+[1] 117.04
+```
+Lines 31-32:
+```
+current_weight <- sum(as.numeric(intToBits(i))[1:number_of_objects] * x$w)
+current_value <- sum(as.numeric(intToBits(i))[1:number_of_objects] * x$v)
+```
+Improvement (Lines 32-33):
+We converted the data frame to a matrix. Matrices are faster to work with than data frames.
+```
+current_weight <- sum(as.numeric(intToBits(i))[1:number_of_objects] * x[,"w"])
+current_value <- sum(as.numeric(intToBits(i))[1:number_of_objects] * x[,"v"])
+```
+Result:
+```
+> summaryRprof(tmp, lines = "show", memory = "both")$by.line
+                 self.time self.pct total.time total.pct mem.total
+Brute_force.R#30      0.90     0.79       0.90      0.79     655.9
+Brute_force.R#32     54.74    48.33      54.74     48.33   41533.0
+Brute_force.R#33     52.20    46.09      52.20     46.09   39467.5
+Brute_force.R#36      5.42     4.79       5.42      4.79    3599.9
+
+> summaryRprof(tmp, lines = "show", memory = "both")$sampling.time
+[1] 113.26
+```
+As as result we see a minor time reduction. We should also note that the memory usage increased dramatically. Therefore, we do not consider this change an improvement.
+
+#### knapsack_dynamic
+After running: `knapsack_dynamic(x = knapsack_objects[1:1000,], W = 3500)`
+
+Output:
+```
+> summaryRprof(tmp, lines = "show", memory = "both")$by.line
+                         self.time self.pct total.time total.pct mem.total
+Dynamic_programming.R#22      0.04     0.28       0.04      0.28       0.0
+Dynamic_programming.R#29      0.02     0.14       0.02      0.14      26.8
+Dynamic_programming.R#35      0.12     0.83       0.12      0.83      37.5
+Dynamic_programming.R#38      4.66    32.36       4.66     32.36    1566.7
+Dynamic_programming.R#39      1.68    11.67       1.68     11.67     509.8
+Dynamic_programming.R#41      7.88    54.72       7.88     54.72    2452.4
+
+> summaryRprof(tmp, lines = "show", memory = "both")$sampling.time
+[1] 14.4
+```
+Lines 38-41:
+```
+if (x$w[i] > j) {
+  m[i + 1, j + 1] <- m[i, j + 1]
+} else {
+  m[i + 1, j + 1] <- max(m[i, j + 1], m[i, j + 1 - x$w[i]] + x$v[i])
+```
+Improvement (Lines 38-42):
+Look up the weight value once and store it in a variable
+```
+object_weight <- x$w[i]
+if (object_weight > j) {
+  m[i + 1, j + 1] <- m[i, j + 1]
+} else {
+  m[i + 1, j + 1] <- max(m[i, j + 1], m[i, j + 1 - object_weight] + x$v[i])
+```
+Result:
+```
+> summaryRprof(tmp, lines = "show", memory = "both")$by.line
+                         self.time self.pct total.time total.pct mem.total
+Dynamic_programming.R#35      0.04     0.32       0.04      0.32      26.0
+Dynamic_programming.R#38      4.68    37.38       4.68     37.38    2000.6
+Dynamic_programming.R#39      0.16     1.28       0.16      1.28      49.6
+Dynamic_programming.R#40      1.70    13.58       1.70     13.58     624.2
+Dynamic_programming.R#42      5.92    47.28       5.92     47.28    2677.5
+Dynamic_programming.R#54      0.02     0.16       0.02      0.16      13.0
+
+> summaryRprof(tmp, lines = "show", memory = "both")$sampling.time
+[1] 12.52
+```
+The result is a significant time reduction due to line 42 (previously 41): 
+`m[i + 1, j + 1] <- max(m[i, j + 1], m[i, j + 1 - object_weight] + x$v[i])`
+
+#### greedy_knapsack
+After running: 
+```
+> suppressWarnings(RNGversion("3.5.9"))
+> set.seed(42)
+> n <- 10000000
+> knapsack_objects <-
++  data.frame(
++      w=sample(1:4000, size = n, replace = TRUE),
++      v=runif(n = n, 0, 10000)
++  )
+> greedy_knapsack(knapsack_objects, W = 3500)
+```
+
+Output:
+```
+> summaryRprof(tmp, lines = "show", memory = "both")$by.line
+                      self.time self.pct total.time total.pct mem.total
+Greedy_heuristic.R#20      0.04     1.74       0.04      1.74       0.0
+Greedy_heuristic.R#26      0.10     4.35       0.10      4.35      76.3
+Greedy_heuristic.R#29      2.10    91.30       2.10     91.30     433.2
+Greedy_heuristic.R#40      0.02     0.87       0.02      0.87      14.0
+Greedy_heuristic.R#43      0.04     1.74       0.04      1.74      15.7
+
+> summaryRprof(tmp, lines = "show", memory = "both")$sampling.time
+[1] 2.3
+```
+Line 29:
+```
+x <- x[order(-x$c),]
+```
+Improvement (Lines 25-31):
+We converted the data frame to a matrix. Matrices are faster to work with than data frames.
+```
+# Add the variable and row number
+x$c <- x$v / x$w
+x$r <- c(1:number_of_objects)
+
+# Order the data frame based on the criterion in decreasing order
+x <- data.matrix(x)
+x <- x[order(-x[,"c"]),]
+```
+Result:
+```
+> summaryRprof(tmp, lines = "show", memory = "both")$by.line
+                      self.time self.pct total.time total.pct mem.total
+Greedy_heuristic.R#20      0.04     2.06       0.04      2.06       0.0
+Greedy_heuristic.R#26      0.04     2.06       0.04      2.06      76.3
+Greedy_heuristic.R#27      0.16     8.25       0.16      8.25      76.3
+Greedy_heuristic.R#30      0.24    12.37       0.24     12.37     457.8
+Greedy_heuristic.R#31      1.42    73.20       1.42     73.20     457.8
+Greedy_heuristic.R#42      0.02     1.03       0.02      1.03      20.6
+Greedy_heuristic.R#45      0.02     1.03       0.02      1.03       7.1
+
+> summaryRprof(tmp, lines = "show", memory = "both")$sampling.time
+[1] 1.94
+```
+The result is a significant time reduction due to line 31 (previously 29): 
+`x <- x[order(-x[,"c"]),]`
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
