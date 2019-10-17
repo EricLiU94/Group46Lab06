@@ -7,6 +7,7 @@ library(Rcpp)
 #' @description A brute force approach for solving knapsack problems. The function will not work for more than 32 items.
 #' @param x A data.frame containing with variables \code{w} and \code{v}
 #' @param W A numeric value stating the maximum allowed weight of selected objects
+#' @param fast A logical indicating whether to use C++ code or not
 #' @return A list containg the best value and the elements selected
 #' @examples
 #' n <- 2000

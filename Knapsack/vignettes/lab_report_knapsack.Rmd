@@ -200,22 +200,25 @@ Greedy_heuristic.R#45      0.02     1.03       0.02      1.03       7.1
 ```
 The result is a significant time reduction due to line 31 (previously 29): 
 `x <- x[order(-x[,"c"]),]`
+
 ## 1.1.7(*)
+
 ### What performance gain could you get by using Rcpp and C++?
-After running: `brute_force_knapsack(x = knapsack_objects[1:16,], W = 3500)`
+After running: `brute_force_knapsack(x = knapsack_objects[1:20,], W = 3500)`
 
 Output:
 ```
 > summaryRprof(tmp, lines = "show", memory = "both")$sampling.time
-[1] 0.52
+[1] 7.62
 ```
 After running: `brute_force_knapsack(x = knapsack_objects[1:16,], W = 3500, fast = TRUE)`
 
 Output:
 ```
 > summaryRprof(tmp, lines = "show", memory = "both")$sampling.time
-[1] 0.52
+[1] 0.12
 ```
+The result is clearly a significant improvement.
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
