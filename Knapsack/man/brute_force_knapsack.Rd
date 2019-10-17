@@ -4,12 +4,14 @@
 \alias{brute_force_knapsack}
 \title{Brute force knapsack}
 \usage{
-brute_force_knapsack(x, W)
+brute_force_knapsack(x, W, fast = FALSE)
 }
 \arguments{
 \item{x}{A data.frame containing with variables \code{w} and \code{v}}
 
 \item{W}{A numeric value stating the maximum allowed weight of selected objects}
+
+\item{fast}{A logical indicating whether to use C++ code or not}
 }
 \value{
 A list containg the best value and the elements selected

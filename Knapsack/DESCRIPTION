@@ -8,6 +8,7 @@ Author: c(person("Eric", "Kamphuis", email = "erika464@student.liu.se", role = c
 Maintainer: Eric Kamphuis <erika464@student.liu.se>
 Description: The package can solve knapsack problems using various methods.
 Depends: R (>= 3.5.0)
+Imports: Rcpp
 License: GPL-3
 Encoding: UTF-8
 RoxygenNote: 6.1.1
